@@ -4,6 +4,7 @@ import br.com.bancodigital.controller.request.TransferRequest;
 import br.com.bancodigital.controller.response.TransferResponse;
 import br.com.bancodigital.domain.Account;
 import br.com.bancodigital.domain.Transfer;
+import br.com.bancodigital.event.TransferCompletedEvent;
 import br.com.bancodigital.exception.AccountNotFoundException;
 import br.com.bancodigital.exception.InsufficientBalanceException;
 import br.com.bancodigital.exception.SameAccountTransferException;
@@ -11,6 +12,7 @@ import br.com.bancodigital.mapper.TransferMapper;
 import br.com.bancodigital.repository.AccountRepository;
 import br.com.bancodigital.repository.TransferRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ public class TransferService {
     private final TransferRepository transferRepository;
     private final AccountRepository accountRepository;
     private final TransferMapper transferMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public TransferResponse transfer(TransferRequest transferRequest) {
@@ -58,6 +61,9 @@ public class TransferService {
 
         Transfer transfer = transferMapper.toEntity(transferRequest, source, destination);
         Transfer saved = transferRepository.save(transfer);
+
+        eventPublisher.publishEvent(new TransferCompletedEvent(
+                source.getId(), destination.getId(), saved.getAmount()));
 
         return transferMapper.toResponse(saved);
     }
