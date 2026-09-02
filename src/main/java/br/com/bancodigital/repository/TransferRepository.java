@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface TransferRepostitory extends JpaRepository<Transfer, Long> {
+public interface TransferRepository extends JpaRepository<Transfer, Long> {
 
     Optional<Transfer> findByIdempotencyKey(String idempotencyKey);
 
