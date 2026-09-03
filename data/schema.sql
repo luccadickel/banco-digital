@@ -25,7 +25,7 @@ CREATE TABLE transfers (
 	CONSTRAINT chk_transfers_different_accounts CHECK (source_account_id <> destination_account_id)
 );
 
-CREATE INDEX idx_transfers_source ON transfers (source_account_id, created_at);
-CREATE INDEX idx_transfers_destination ON transfers (destination_account_id, created_at);
+CREATE INDEX idx_transfers_source ON transfers (source_account_id);
+CREATE INDEX idx_transfers_destination ON transfers (destination_account_id);
 
 CREATE INDEX idx_accounts_user ON accounts (user_id); 
