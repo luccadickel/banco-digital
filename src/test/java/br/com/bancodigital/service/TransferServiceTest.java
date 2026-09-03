@@ -4,6 +4,7 @@ import br.com.bancodigital.controller.request.TransferRequest;
 import br.com.bancodigital.controller.response.TransferResponse;
 import br.com.bancodigital.domain.Account;
 import br.com.bancodigital.domain.Transfer;
+import br.com.bancodigital.event.TransferCompletedEvent;
 import br.com.bancodigital.exception.AccountNotFoundException;
 import br.com.bancodigital.exception.InsufficientBalanceException;
 import br.com.bancodigital.exception.SameAccountTransferException;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -38,6 +40,9 @@ public class TransferServiceTest {
 
     @Mock
     private TransferMapper transferMapper;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private TransferService transferService;
@@ -68,6 +73,7 @@ public class TransferServiceTest {
         assertThat(source.getBalance()).isEqualByComparingTo("900.00");
         assertThat(destination.getBalance()).isEqualByComparingTo("600.00");
         verify(transferRepository).save(any(Transfer.class));
+        verify(eventPublisher).publishEvent(any(TransferCompletedEvent.class));
     }
 
     @Test
